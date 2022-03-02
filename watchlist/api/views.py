@@ -99,18 +99,26 @@ class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [ReviewUserOrReadOnly]
 
-
     def get_queryset(self):
         return Review.objects.all()
 
     def perform_create(self, serializer):
         pk = self.kwargs.get('pk')
         watchlist = WatchList.objects.get(pk=pk)
+
         review_user = self.request.user
-        review_queryset = Review.objects.filter(review_user=review_user, watchlist=watchlist)
+        review_queryset = Review.objects.filter(watchlist=watchlist, review_user=review_user)
 
         if review_queryset.exists():
-            raise ValidationError("You can't add more than 1 review")
+            raise ValidationError("You have already reviewed this movie!")
+
+        if watchlist.number_rating == 0:
+            watchlist.avg_rating = serializer.validated_data['rating']
+        else:
+            watchlist.avg_rating = (watchlist.avg_rating + serializer.validated_data['rating'])/2
+
+        watchlist.number_rating = watchlist.number_rating + 1
+        watchlist.save()
 
         serializer.save(watchlist=watchlist, review_user=review_user)
 
@@ -118,7 +126,6 @@ class ReviewCreate(generics.CreateAPIView):
 class ReviewList(generics.ListAPIView, generics.CreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
-
 
     def get_queryset(self):
         pk = self.kwargs['pk']
