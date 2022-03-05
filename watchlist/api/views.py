@@ -7,6 +7,9 @@ from rest_framework import status
 from rest_framework import mixins, generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
+
+
 from .permissions import AdminOrReadOnly, ReviewUserOrReadOnly
 
 
@@ -59,6 +62,7 @@ class WatchDetailAV(APIView):
 class StreamPlatformList(APIView):
 
     permission_classes = [AdminOrReadOnly]
+    throttle_classes = [UserRateThrottle, AnonRateThrottle]
 
     def get(self, request):
 
