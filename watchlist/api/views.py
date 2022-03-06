@@ -155,6 +155,22 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     throttle_scope = 'review-detail'
 
 
+class ReviewUser(generics.ListAPIView):
+
+    serializer_class = ReviewSerializer
+
+    # def get_queryset(self):
+    #     username = self.kwargs['username']
+    #     return Review.objects.filter(review_user__username=username)
+
+    def get_queryset(self):
+
+        queryset = Review.objects.all()
+        username = self.request.query_params.get('username', None)
+
+        if username is not None:
+            queryset = queryset.filter(review_user__username=username)
+        return queryset
 
 # class ReviewList(mixins.ListModelMixin, mixins.CreateModelMixin
 #                  , generics.GenericAPIView):
