@@ -152,5 +152,9 @@ REST_FRAMEWORK = {
         'review-list': '10/day',
         'review-create': '1/day',
         'review-detail': '5/day'
-    }
+    },
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+
 }
