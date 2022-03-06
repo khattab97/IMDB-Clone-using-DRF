@@ -8,6 +8,8 @@ from rest_framework import mixins, generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 from .permissions import AdminOrReadOnly, ReviewUserOrReadOnly
@@ -30,6 +32,17 @@ class WatchListAV(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+
+class WatchListGV(generics.ListAPIView):
+
+    serializer_class = WatchListSerializer
+    queryset = WatchList.objects.all()
+    # filter_backends = [DjangoFilterBackend]
+    # filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.OrderingFilter]
+    # filterset_fields = ['title', 'platform__name']
+    filterset_firlds = ['avg_rating']
 
 
 class WatchDetailAV(APIView):
@@ -140,7 +153,9 @@ class ReviewCreate(generics.CreateAPIView):
 class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
 #    permission_classes = [ReviewUserOrReadOnly]
-    throttle_classes = [ReviewListThrottling]
+#    throttle_classes = [ReviewListThrottling]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['review_user__username', 'active']
 
     def get_queryset(self):
         pk = self.kwargs['pk']
