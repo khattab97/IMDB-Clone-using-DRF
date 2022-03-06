@@ -14,7 +14,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .permissions import AdminOrReadOnly, ReviewUserOrReadOnly
 from .throttling import ReviewListThrottling, ReviewCreateThrottling
-from .pagination import WatchListPagination
+from .pagination import WatchListPagination, WatchListLOPagination
 
 
 class WatchListAV(APIView):
@@ -44,7 +44,8 @@ class WatchListGV(generics.ListAPIView):
     filter_backends = [filters.OrderingFilter]
     # filterset_fields = ['title', 'platform__name']
     filterset_fields = ['avg_rating']
-    pagination_class = WatchListPagination
+    # pagination_class = WatchListPagination
+    pagination_class = WatchListLOPagination
 
 
 class WatchDetailAV(APIView):
