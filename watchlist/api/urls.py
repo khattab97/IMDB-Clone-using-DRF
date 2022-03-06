@@ -17,4 +17,6 @@ urlpatterns = [
 
     path('reviews/', views.ReviewUser.as_view(), name='review-user'),
 
+    path('list2/', views.WatchListGV.as_view(), name='show-list'),
+
 ]
